@@ -1,5 +1,6 @@
 import os
 
+import matplotlib.colors
 import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
@@ -12,6 +13,10 @@ import configs.config as config
 
 from lib import utils
 from lib.visualizations.AverageMeterWriter import AverageMeterWriter
+
+import matplotlib as mpl
+from mayavi import mlab
+
 
 
 class Tester():
@@ -139,6 +144,8 @@ class Tester():
             # 显示分布对比图
             self.display_compare_hist(label_np, class_map, bins=35)
 
+            # 分割图3D可视化
+            self.display_segmentation_3D(class_map)
 
             OrthoSlicer3D(label_np).show()
             OrthoSlicer3D(class_map).show()
@@ -211,10 +218,81 @@ class Tester():
         plt.show()
 
 
-
     # 分割图的3D可视化
     def display_segmentation_3D(self, class_map):
-        plt.scatter()
+        # 读取索引文件
+        index_to_class_dict = utils.load_json_file(
+            os.path.join(r"./lib/dataloaders/index_to_class", config.dataset_name + ".json"))
+        class_to_index_dict = {}
+        for key, val in index_to_class_dict.items():
+            class_to_index_dict[val] = key
+
+
+
+        x = []
+        y = []
+        z = []
+        label = []
+        for index in [int(index) for index in index_to_class_dict.keys()]:
+            # print(index)
+            # print(np.where(class_map == i))
+            pos_x, pos_y, pos_z = np.nonzero(class_map == index)
+            x.extend(list(pos_x))
+            y.extend(list(pos_y))
+            z.extend(list(pos_z))
+            label.extend([index] * len(pos_x))
+
+        color_table = np.array([
+            [255, 255, 255, 0],  # 0 background
+            [255, 255, 255, 30],  # 1 gum
+            [255, 215, 0, 255],  # 2 implant
+            [85, 0, 0, 255],  # 3 ul1
+            [255, 0, 0, 255],  # 4 ul2
+            [85, 85, 0, 255],  # 5 ul3
+            [255, 85, 0, 255],  # 6 ul4
+            [85, 170, 0, 255],  # 7, ul5
+            [255, 170, 0, 255],  # 8, ul6
+            [85, 255, 0, 255],  # 9 ul7
+            [255, 255, 0, 255],  # 10, ul8
+            [0, 0, 255, 255],  # 11 ur1
+            [170, 0, 255, 255],  # 12 ur2
+            [0, 85, 255, 255],  # 13 ur3
+            [170, 85, 255, 255],  # 14 ur4
+            [0, 170, 255, 255],  # 15 ur5
+            [170, 170, 255, 255],  # 16 ur6
+            [0, 255, 255, 255],  # 17 ur7
+            [170, 255, 255, 255],  # 18 ur8
+            [0, 0, 127, 255],  # 19 bl1
+            [170, 0, 127, 255],  # 20 bl2
+            [0, 85, 127, 255],  # 21 bl3
+            [170, 85, 127, 255],  # 22 bl4
+            [0, 170, 127, 255],  # 23 bl5
+            [170, 170, 127, 255],  # 24 bl6
+            [0, 255, 127, 255],  # 25 bl7
+            [170, 255, 127, 255],  # 26 bl8
+            [0, 0, 0, 255],  # 27 br1
+            [170, 0, 0, 255],  # 28 br2
+            [0, 85, 0, 255],  # 29 br3
+            [170, 85, 0, 255],  # 30 br4
+            [0, 170, 0, 255],  # 31 br5
+            [170, 170, 0, 255],  # 32 br6
+            [0, 255, 0, 255],  # 33 br7
+            [170, 255, 0, 255],  # 34 br8
+        ], dtype=np.uint8)
+        extent = [0, class_map.shape[0], 0, class_map.shape[1], 0, class_map.shape[2]]
+
+        p3d = mlab.points3d(x, y, z, label, extent=extent, mode='cube', scale_factor=0.5, scale_mode="none")
+        mlab.xlabel("X Label")
+        mlab.ylabel("Y Label")
+        mlab.zlabel("Z Label")
+        p3d.module_manager.scalar_lut_manager.lut.number_of_colors = config.classes
+        p3d.module_manager.scalar_lut_manager.lut.table = color_table
+        p3d.glyph.color_mode = "color_by_scalar"
+        p3d.glyph.glyph_source.glyph_source.center = [0, 0, 0]
+        mlab.show()
+
+
+
 
 
 
