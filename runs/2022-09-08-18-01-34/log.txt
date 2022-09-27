@@ -1,0 +1,150 @@
+
+Epoch:   0 Train Loss:0.4811 Train DSC:0.5189
+Epoch:   0 Val Loss:0.4976 Val DSC:0.5024
+
+Epoch:   1 Train Loss:0.3175 Train DSC:0.6825
+Epoch:   1 Val Loss:0.4438 Val DSC:0.5562
+
+Epoch:   2 Train Loss:0.2829 Train DSC:0.7171
+Epoch:   2 Val Loss:0.5365 Val DSC:0.4635
+
+Epoch:   3 Train Loss:0.2538 Train DSC:0.7462
+Epoch:   3 Val Loss:0.4655 Val DSC:0.5345
+
+Epoch:   4 Train Loss:0.2449 Train DSC:0.7551
+Epoch:   4 Val Loss:0.3991 Val DSC:0.6009
+
+Epoch:   5 Train Loss:0.2333 Train DSC:0.7667
+Epoch:   5 Val Loss:0.4466 Val DSC:0.5534
+
+Epoch:   6 Train Loss:0.2282 Train DSC:0.7718
+Epoch:   6 Val Loss:0.5858 Val DSC:0.4142
+
+Epoch:   7 Train Loss:0.2223 Train DSC:0.7777
+Epoch:   7 Val Loss:0.4936 Val DSC:0.5064
+
+Epoch:   8 Train Loss:0.2144 Train DSC:0.7856
+Epoch:   8 Val Loss:0.4680 Val DSC:0.5320
+
+Epoch:   9 Train Loss:0.2078 Train DSC:0.7922
+Epoch:   9 Val Loss:0.4330 Val DSC:0.5670
+
+Epoch:  10 Train Loss:0.2063 Train DSC:0.7937
+Epoch:  10 Val Loss:0.4635 Val DSC:0.5365
+
+Epoch:  11 Train Loss:0.2008 Train DSC:0.7992
+Epoch:  11 Val Loss:0.5160 Val DSC:0.4840
+
+Epoch:  12 Train Loss:0.1964 Train DSC:0.8036
+Epoch:  12 Val Loss:0.6260 Val DSC:0.3740
+
+Epoch:  13 Train Loss:0.1968 Train DSC:0.8032
+Epoch:  13 Val Loss:0.6240 Val DSC:0.3760
+
+Epoch:  14 Train Loss:0.1925 Train DSC:0.8075
+Epoch:  14 Val Loss:0.4817 Val DSC:0.5183
+
+Epoch:  15 Train Loss:0.1952 Train DSC:0.8048
+Epoch:  15 Val Loss:0.4672 Val DSC:0.5328
+
+Epoch:  16 Train Loss:0.1877 Train DSC:0.8123
+Epoch:  16 Val Loss:0.4955 Val DSC:0.5045
+
+Epoch:  17 Train Loss:0.1886 Train DSC:0.8114
+Epoch:  17 Val Loss:0.5824 Val DSC:0.4176
+
+Epoch:  18 Train Loss:0.1864 Train DSC:0.8136
+Epoch:  18 Val Loss:0.5350 Val DSC:0.4650
+
+Epoch:  19 Train Loss:0.1871 Train DSC:0.8129
+Epoch:  19 Val Loss:0.5722 Val DSC:0.4278
+
+Epoch:  20 Train Loss:0.1831 Train DSC:0.8169
+Epoch:  20 Val Loss:0.5744 Val DSC:0.4256
+
+Epoch:  21 Train Loss:0.1845 Train DSC:0.8155
+Epoch:  21 Val Loss:0.4074 Val DSC:0.5926
+
+Epoch:  22 Train Loss:0.1849 Train DSC:0.8151
+Epoch:  22 Val Loss:0.4810 Val DSC:0.5190
+
+Epoch:  23 Train Loss:0.1804 Train DSC:0.8196
+Epoch:  23 Val Loss:0.5218 Val DSC:0.4782
+
+Epoch:  24 Train Loss:0.1827 Train DSC:0.8173
+Epoch:  24 Val Loss:0.5605 Val DSC:0.4395
+
+Epoch:  25 Train Loss:0.1850 Train DSC:0.8150
+Epoch:  25 Val Loss:0.6861 Val DSC:0.3139
+
+Epoch:  26 Train Loss:0.1821 Train DSC:0.8179
+Epoch:  26 Val Loss:0.4737 Val DSC:0.5263
+
+Epoch:  27 Train Loss:0.1799 Train DSC:0.8201
+Epoch:  27 Val Loss:0.5011 Val DSC:0.4989
+
+Epoch:  28 Train Loss:0.1825 Train DSC:0.8175
+Epoch:  28 Val Loss:0.4018 Val DSC:0.5982
+
+Epoch:  29 Train Loss:0.1815 Train DSC:0.8185
+Epoch:  29 Val Loss:0.3976 Val DSC:0.6024
+
+Epoch:  30 Train Loss:0.1803 Train DSC:0.8197
+Epoch:  30 Val Loss:0.4389 Val DSC:0.5611
+
+Epoch:  31 Train Loss:0.1797 Train DSC:0.8203
+Epoch:  31 Val Loss:0.4637 Val DSC:0.5363
+
+Epoch:  32 Train Loss:0.1803 Train DSC:0.8197
+Epoch:  32 Val Loss:0.5454 Val DSC:0.4546
+
+Epoch:  33 Train Loss:0.1759 Train DSC:0.8241
+Epoch:  33 Val Loss:0.5069 Val DSC:0.4931
+
+Epoch:  34 Train Loss:0.1792 Train DSC:0.8208
+Epoch:  34 Val Loss:0.5253 Val DSC:0.4747
+
+Epoch:  35 Train Loss:0.1775 Train DSC:0.8225
+Epoch:  35 Val Loss:0.5573 Val DSC:0.4427
+
+Epoch:  36 Train Loss:0.1742 Train DSC:0.8258
+Epoch:  36 Val Loss:0.4698 Val DSC:0.5302
+
+Epoch:  37 Train Loss:0.1763 Train DSC:0.8237
+Epoch:  37 Val Loss:0.4622 Val DSC:0.5378
+
+Epoch:  38 Train Loss:0.1775 Train DSC:0.8225
+Epoch:  38 Val Loss:0.4166 Val DSC:0.5834
+
+Epoch:  39 Train Loss:0.1770 Train DSC:0.8230
+Epoch:  39 Val Loss:0.4536 Val DSC:0.5464
+
+Epoch:  40 Train Loss:0.1763 Train DSC:0.8237
+Epoch:  40 Val Loss:0.4757 Val DSC:0.5243
+
+Epoch:  41 Train Loss:0.1792 Train DSC:0.8208
+Epoch:  41 Val Loss:0.4675 Val DSC:0.5325
+
+Epoch:  42 Train Loss:0.1732 Train DSC:0.8268
+Epoch:  42 Val Loss:0.4512 Val DSC:0.5488
+
+Epoch:  43 Train Loss:0.1746 Train DSC:0.8254
+Epoch:  43 Val Loss:0.4384 Val DSC:0.5616
+
+Epoch:  44 Train Loss:0.1757 Train DSC:0.8243
+Epoch:  44 Val Loss:0.3703 Val DSC:0.6297
+
+Epoch:  45 Train Loss:0.1763 Train DSC:0.8237
+Epoch:  45 Val Loss:0.3769 Val DSC:0.6231
+
+Epoch:  46 Train Loss:0.1733 Train DSC:0.8267
+Epoch:  46 Val Loss:0.4284 Val DSC:0.5716
+
+Epoch:  47 Train Loss:0.1783 Train DSC:0.8217
+Epoch:  47 Val Loss:0.4757 Val DSC:0.5243
+
+Epoch:  48 Train Loss:0.1732 Train DSC:0.8268
+Epoch:  48 Val Loss:0.4869 Val DSC:0.5131
+
+Epoch:  49 Train Loss:0.1757 Train DSC:0.8243
+Epoch:  49 Val Loss:0.4853 Val DSC:0.5147
