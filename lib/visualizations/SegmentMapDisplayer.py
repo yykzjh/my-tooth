@@ -78,24 +78,27 @@ def display_segmentation_3D(class_map):
     index_to_class_dict = utils.load_json_file(
         os.path.join(r"./lib/dataloaders/index_to_class", config.dataset_name + ".json"))
     class_to_index_dict = {}
+    # 获得类别到索引的映射字典
     for key, val in index_to_class_dict.items():
         class_to_index_dict[val] = key
 
-
-
+    # 初始化三个轴的坐标列表
     x = []
     y = []
     z = []
+    # 初始化每个点对应的类别索引列表
     label = []
+    # 遍历所有类别的索引
     for index in [int(index) for index in index_to_class_dict.keys()]:
-        # print(index)
-        # print(np.where(class_map == i))
+        # 获取值为当前类别索引的所有点的坐标
         pos_x, pos_y, pos_z = np.nonzero(class_map == index)
         x.extend(list(pos_x))
         y.extend(list(pos_y))
         z.extend(list(pos_z))
+        # 添加和点数相同数量的类别索引
         label.extend([index] * len(pos_x))
 
+    # 自定义每个牙齿类别的颜色
     color_table = np.array([
         [255, 255, 255, 0],  # 0 background
         [255, 255, 255, 30],  # 1 gum
@@ -133,17 +136,56 @@ def display_segmentation_3D(class_map):
         [0, 255, 0, 255],  # 33 br7
         [170, 255, 0, 255],  # 34 br8
     ], dtype=np.uint8)
+    # 定义三维空间每个轴的显示范围
     extent = [0, class_map.shape[0], 0, class_map.shape[1], 0, class_map.shape[2]]
 
-    p3d = mlab.points3d(x, y, z, label, extent=extent, mode='cube', scale_factor=0.5, scale_mode="none")
-    mlab.xlabel("X Label")
-    mlab.ylabel("Y Label")
-    mlab.zlabel("Z Label")
-    p3d.module_manager.scalar_lut_manager.lut.number_of_colors = config.classes
-    p3d.module_manager.scalar_lut_manager.lut.table = color_table
-    p3d.glyph.color_mode = "color_by_scalar"
-    p3d.glyph.glyph_source.glyph_source.center = [0, 0, 0]
-    mlab.show()
+    # 定位缺失牙齿并且画出缺失牙齿的位置
+    locate_and_display_missing_tooth(class_map, index_to_class_dict)
+
+    # # 画3D点图
+    # p3d = mlab.points3d(x, y, z, label, extent=extent, mode='cube', scale_factor=1, scale_mode="none")
+    # # 定义三个轴的注释
+    # mlab.xlabel("X Label")
+    # mlab.ylabel("Y Label")
+    # mlab.zlabel("Z Label")
+    # # 设置采用自定义的色彩表
+    # p3d.module_manager.scalar_lut_manager.lut.number_of_colors = config.classes
+    # p3d.module_manager.scalar_lut_manager.lut.table = color_table
+    # # 设置点的色彩的模式
+    # p3d.glyph.color_mode = "color_by_scalar"
+    # mlab.show()
+
+
+
+# 定位并且画出缺失的牙齿
+def locate_and_display_missing_tooth(class_map, index_to_class_dict):
+    # 分别定义上下牙齿从左到右依次的类别索引参考表
+    reference_table = [
+        [10, 9, 8, 7, 6, 5, 4, 3, 11, 12, 13, 14, 15, 16, 17, 18],
+        [26, 25, 24, 23, 22, 21, 20, 19, 27, 28, 29, 30, 31, 32, 33, 34]
+    ]
+    # 初始化统计各类别是否存在的表
+    class_exit_label = [[0]*len(reference_table[0]), [0]*len(reference_table[1])]
+    # 根据分割结果，统计各类别的存在状态
+    for i in range(len(reference_table)):
+        for j in range(len(reference_table[i])):
+            if reference_table[i][j] in class_map:
+                class_exit_label[i][j] = 1
+    # 分别遍历上牙和下牙，寻找缺失的牙齿
+    for i in range(len(reference_table)):
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

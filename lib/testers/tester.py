@@ -1,11 +1,12 @@
 import os
 import math
-import matplotlib.colors
+import cc3d
 import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 from tqdm import tqdm
 import numpy as np
+from functools import reduce
 from nibabel.viewers import OrthoSlicer3D
 
 import configs.config as config
@@ -51,7 +52,7 @@ class Tester():
             total_slice_num *= math.ceil((ori_shape[i] - slice_shape[i]) / stride[i]) + 1
 
         # 设置进度条
-        with tqdm(desc="滑动切片预测", leave=True, total=total_slice_num, unit="slice", ncols=200, ascii=True) as bar:
+        with tqdm(desc="滑动切片分割", leave=True, total=total_slice_num, unit="slice", ncols=200, ascii=True) as bar:
             # 在三个维度上进行滑动切片
             for shape0_start in range(0, ori_shape[0], stride[0]):
                 shape0_end = shape0_start + slice_shape[0]
@@ -146,6 +147,9 @@ class Tester():
             # print(output[0, :, class_map == 26].permute(1, 0)[:20, :])
             # print(output[0, :, class_map == 26].permute(1, 0)[:20, 26].reshape((-1, 1)))
 
+            # 对预测分割图进行最大连通区域处理
+            class_map = maximum_connected_component_analysis(class_map)
+
             # 显示分布对比图
             display_compare_hist(label_np, class_map)
 
@@ -173,6 +177,54 @@ class Tester():
                 self.writer.update(per_channel_dice)
         self.writer.display_terminal()
 
+
+
+def maximum_connected_component_analysis(class_map):
+    # 每个类别只保留最大的连通区域，定义列表表示每个类别是否已经处理过了
+    rec_label = np.zeros((config.classes, ))
+    # 计算总元素个数
+    element_num = reduce(lambda x, y: x * y, class_map.shape)
+    # 拷贝一份原始图像
+    segment_map = class_map.copy()
+
+    # 定义连通性强度
+    connectivity = 26
+    # 进行连通区域分析标记，返回标记三维数组
+    labels_out, N = cc3d.connected_components(segment_map, return_N=True, connectivity=connectivity)
+    # 进一步获取连通区域的统计信息
+    """
+    {
+      voxel_counts: np.ndarray[uint64_t] (index is label) (N+1)
+
+      # Structure is xmin,xmax,ymin,ymax,zmin,zmax by label
+      bounding_boxes: np.ndarray[uint64_t] (N+1 x 6)
+
+      # Structure is x,y,z
+      centroids: np.ndarray[float64] (N+1,3)
+    }
+    """
+    statistics_data = cc3d.statistics(labels_out)
+    # 得到每个连通区域的大小，索引表示连通区域的编号，元素值为该连通区域大小
+    voxel_counts = statistics_data["voxel_counts"]
+    # 构造所有连通区域面积和label构成的元组的列表
+    components = [(voxel_counts[i], i) for i in range(1, N+1)]
+    # 按照连通区域面积从大到小排序
+    components = sorted(components, key=lambda x: x[0], reverse=True)
+
+    # 遍历所有的连通区域
+    for i in range(N):
+        # 获取当前连通区域的label
+        ccl_label = components[i][1]
+        # 获取当前连通区域的原数据值
+        ori_label = class_map[labels_out == ccl_label][0]
+        # 判断当前得到的原数值代表的牙齿类别是否已经处理过
+        if (ori_label == 1 and components[i][0] < 0.02 * element_num) or (ori_label != 1 and rec_label[ori_label] == 1):
+            # 该连通区域不是该牙齿类别的最大连通区域, 设置为背景0
+            segment_map[labels_out == ccl_label] = 0
+        elif ori_label != 1:
+            # 该连通区域是该牙齿类别的最大连通区域
+            rec_label[ori_label] = 1
+    return segment_map
 
 
 
