@@ -140,7 +140,7 @@ def display_segmentation_3D(class_map):
     extent = [0, class_map.shape[0], 0, class_map.shape[1], 0, class_map.shape[2]]
 
     # 画3D点图
-    p3d = mlab.points3d(x, y, z, label, extent=extent, mode='cube', scale_factor=1, scale_mode="none")
+    p3d = mlab.points3d(x, y, z, label, extent=extent, mode='sphere', scale_factor=1, resolution=4, scale_mode="none")
 
     # 定位缺失牙齿并且画出缺失牙齿的位置
     missing_tooth_position, missing_tooth_classes = search_and_display_missing_tooth(class_map, index_to_class_dict)
@@ -177,7 +177,8 @@ def locate_missing_tooth(class_map, label1, label2):
 
     # 计算出缺失牙齿目标框6个面分别在垂直轴上的坐标
     x_min, x_max, y_min, y_max, z_min, z_max = \
-        min(x1_max, x2_max), max(x1_min, x2_min), int((y1_min + y2_min) / 2), int((y1_max + y2_max) / 2), \
+        min(x1_max, x2_max) + config.missing_tooth_box_margin, max(x1_min, x2_min) - config.missing_tooth_box_margin, \
+        int((y1_min + y2_min) / 2), int((y1_max + y2_max) / 2), \
         int((z1_min + z2_min) / 2), int((z1_max + z2_max) / 2)
 
     # 根据这6个面的坐标构造立方体的8个顶点
