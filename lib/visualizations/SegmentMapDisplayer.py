@@ -139,26 +139,106 @@ def display_segmentation_3D(class_map):
     # 定义三维空间每个轴的显示范围
     extent = [0, class_map.shape[0], 0, class_map.shape[1], 0, class_map.shape[2]]
 
+    # 画3D点图
+    p3d = mlab.points3d(x, y, z, label, extent=extent, mode='cube', scale_factor=1, scale_mode="none")
+
     # 定位缺失牙齿并且画出缺失牙齿的位置
-    locate_and_display_missing_tooth(class_map, index_to_class_dict)
+    missing_tooth_position, missing_tooth_classes = search_and_display_missing_tooth(class_map, index_to_class_dict)
+    print(missing_tooth_position)
+    print(missing_tooth_classes)
 
-    # # 画3D点图
-    # p3d = mlab.points3d(x, y, z, label, extent=extent, mode='cube', scale_factor=1, scale_mode="none")
-    # # 定义三个轴的注释
-    # mlab.xlabel("X Label")
-    # mlab.ylabel("Y Label")
-    # mlab.zlabel("Z Label")
-    # # 设置采用自定义的色彩表
-    # p3d.module_manager.scalar_lut_manager.lut.number_of_colors = config.classes
-    # p3d.module_manager.scalar_lut_manager.lut.table = color_table
-    # # 设置点的色彩的模式
-    # p3d.glyph.color_mode = "color_by_scalar"
-    # mlab.show()
+    # 定义三个轴的注释
+    mlab.xlabel("X Label")
+    mlab.ylabel("Y Label")
+    mlab.zlabel("Z Label")
+    # 设置采用自定义的色彩表
+    p3d.module_manager.scalar_lut_manager.lut.number_of_colors = config.classes
+    p3d.module_manager.scalar_lut_manager.lut.table = color_table
+    # 设置点的色彩的模式
+    p3d.glyph.color_mode = "color_by_scalar"
+
+    mlab.show()
 
 
 
-# 定位并且画出缺失的牙齿
-def locate_and_display_missing_tooth(class_map, index_to_class_dict):
+
+# 根据缺失牙齿两边的牙齿类别定位缺失牙齿
+def locate_missing_tooth(class_map, label1, label2):
+    # 获取第一个标签类的坐标信息
+    x1_pos, y1_pos, z1_pos = np.where(class_map == label1)
+    # 获取第二个标签类的坐标信息
+    x2_pos, y2_pos, z2_pos = np.where(class_map == label2)
+    # 获取第一个标签坐标在三个轴上的最大值和最小值
+    x1_min, x1_max, y1_min, y1_max, z1_min, z1_max = \
+        x1_pos.min(), x1_pos.max(), y1_pos.min(), y1_pos.max(), z1_pos.min(), z1_pos.max()
+    # 获取第二个标签坐标在三个轴上的最大值和最小值
+    x2_min, x2_max, y2_min, y2_max, z2_min, z2_max = \
+        x2_pos.min(), x2_pos.max(), y2_pos.min(), y2_pos.max(), z2_pos.min(), z2_pos.max()
+
+    # 计算出缺失牙齿目标框6个面分别在垂直轴上的坐标
+    x_min, x_max, y_min, y_max, z_min, z_max = \
+        min(x1_max, x2_max), max(x1_min, x2_min), int((y1_min + y2_min) / 2), int((y1_max + y2_max) / 2), \
+        int((z1_min + z2_min) / 2), int((z1_max + z2_max) / 2)
+
+    # 根据这6个面的坐标构造立方体的8个顶点
+    #                                   pt1_ _ _ _ _ _ _ _ _pt2
+    #                                    /|                 /|
+    #                                   / |                / |
+    #                               pt3/_ | _ _ _ _ _ _pt4/  |
+    #                                 |   |              |   |
+    #                                 |   |              |   |
+    #                                 |  pt5_ _ _ _ _ _ _|_ _|pt6
+    #                                 |  /               |  /
+    #                                 | /                | /
+    #                     (0,0,0)  pt7|/_ _ _ _ _ _ _ _ _|/pt8
+    pt1 = (x_min, y_max, z_max)
+    pt2 = (x_max, y_max, z_max)
+    pt3 = (x_min, y_min, z_max)
+    pt4 = (x_max, y_min, z_max)
+    pt5 = (x_min, y_max, z_min)
+    pt6 = (x_max, y_max, z_min)
+    pt7 = (x_min, y_min, z_min)
+    pt8 = (x_max, y_min, z_min)
+
+    return [pt1, pt2, pt3, pt4, pt5, pt6, pt7, pt8]
+
+
+
+# 根据立方体的八个顶点坐标画出缺失牙齿的定位框
+def plot_missing_tooth(vertex_list):
+    # 分别获取8个顶点三个轴上的坐标信息
+    x1, y1, z1 = vertex_list[0]  # | => pt1
+    x2, y2, z2 = vertex_list[1]  # | => pt2
+    x3, y3, z3 = vertex_list[2]  # | => pt3
+    x4, y4, z4 = vertex_list[3]  # | => pt4
+    x5, y5, z5 = vertex_list[4]  # | => pt5
+    x6, y6, z6 = vertex_list[5]  # | => pt6
+    x7, y7, z7 = vertex_list[6]  # | => pt7
+    x8, y8, z8 = vertex_list[7]  # | => pt8
+    # 画出立方体目标框
+    mlab.mesh([[x1, x2, x6, x6, x6],
+               [x3, x4, x8, x6, x2],
+               [x7, x8, x8, x6, x2],
+               [x7, x7, x7, x5, x1],
+               [x7, x3, x3, x1, x1]],
+              [[y1, y2, y6, y6, y6],
+               [y3, y4, y8, y6, y2],
+               [y7, y8, y8, y6, y2],
+               [y7, y7, y7, y5, y1],
+               [y7, y3, y3, y1, y1]],
+              [[z1, z2, z6, z6, z6],
+               [z3, z4, z8, z6, z2],
+               [z7, z8, z8, z6, z2],
+               [z7, z7, z7, z5, z1],
+               [z7, z3, z3, z1, z1]],
+              color=(1, 0, 0), representation='wireframe', line_width=2.0)
+
+
+
+
+
+# 搜索并且画出缺失的牙齿
+def search_and_display_missing_tooth(class_map, index_to_class_dict):
     # 分别定义上下牙齿从左到右依次的类别索引参考表
     reference_table = [
         [10, 9, 8, 7, 6, 5, 4, 3, 11, 12, 13, 14, 15, 16, 17, 18],
@@ -171,8 +251,62 @@ def locate_and_display_missing_tooth(class_map, index_to_class_dict):
         for j in range(len(reference_table[i])):
             if reference_table[i][j] in class_map:
                 class_exit_label[i][j] = 1
+    print(class_exit_label)
+    print(reference_table)
+
+    # 定义保存缺失牙齿8个顶点坐标和牙齿类别的数据结构
+    missing_tooth_position = []
+    missing_tooth_classes = []
     # 分别遍历上牙和下牙，寻找缺失的牙齿
     for i in range(len(reference_table)):
+        # 先确定一排牙齿中左右存在的牙齿边界；对于边上缺牙和天生边上就少牙的情况不予区分
+        for j in range(len(class_exit_label[i])):  # 找左边界
+            if class_exit_label[i][j] == 1:  # 第一个存在的牙齿为左边界
+                left_boundary = j
+                break
+        # 找右边界
+        for j in range(len(class_exit_label[i])-1, -1, -1):
+            if class_exit_label[i][j] == 1:
+                right_boundary = j
+                break
+        # 定义需要维护的统计变量
+        zero_cnt = 0  # 连续出现0的计数
+        pre_one_index = left_boundary  # 上一个1的下标
+        # 开始便利搜索缺失牙齿
+        for j in range(left_boundary+1, right_boundary+1):
+            if class_exit_label[i][j] == 0:
+                # 如果是0,计数+1
+                zero_cnt += 1
+            else:
+                # 如果是1,判断之前0的计数
+                if zero_cnt > 0:
+                    # 之前出现0的计数大于0，说明之前存在缺失牙齿，需要确定缺失牙位置，获得将确实牙齿位置框出来的立方体的八个顶点坐标
+                    vertex_list = locate_missing_tooth(class_map, reference_table[i][pre_one_index], reference_table[i][j])
+                    # 根据八个顶点画出缺失牙齿的目标框
+                    plot_missing_tooth(vertex_list)
+                    # 添加当前缺失牙齿位置信息
+                    missing_tooth_position.append(vertex_list)
+                    # 初始化当前缺失牙齿目标框包含的牙齿类别
+                    missing_tooth_box_classes = []
+                    # 遍历连续的被识别为一个目标框的所有缺失牙齿
+                    for k in range(1, zero_cnt+1):
+                        missing_tooth_box_classes.append(index_to_class_dict[reference_table[i][j-k]])
+                    # 添加当前缺失牙齿类别信息
+                    missing_tooth_classes.append(missing_tooth_box_classes)
+                # 0的计数从新开始
+                zero_cnt = 0
+                # 更新前一个1的索引
+                pre_one_index = j
+
+    return missing_tooth_position, missing_tooth_classes
+
+
+
+
+
+
+
+
 
 
 

@@ -71,10 +71,13 @@ def prepare_input(input_tuple, device=None):
 
 
 def load_json_file(file_path):
+    def key_2_int(x):
+        return {int(k): v for k, v in x.items()}
+
     json_file = r"./lib/dataloaders/index_to_class/3DTooth.json"
     assert os.path.exists(file_path), "{} file not exist.".format(file_path)
     json_file = open(file_path, 'r')
-    dict = json.load(json_file)
+    dict = json.load(json_file, object_hook=key_2_int)
     json_file.close()
 
     return dict

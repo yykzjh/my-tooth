@@ -179,6 +179,7 @@ class Tester():
 
 
 
+# 筛选每个类别的最大连通区域
 def maximum_connected_component_analysis(class_map):
     # 每个类别只保留最大的连通区域，定义列表表示每个类别是否已经处理过了
     rec_label = np.zeros((config.classes, ))
@@ -218,7 +219,7 @@ def maximum_connected_component_analysis(class_map):
         # 获取当前连通区域的原数据值
         ori_label = class_map[labels_out == ccl_label][0]
         # 判断当前得到的原数值代表的牙齿类别是否已经处理过
-        if (ori_label == 1 and components[i][0] < 0.02 * element_num) or (ori_label != 1 and rec_label[ori_label] == 1):
+        if (ori_label == 1 and components[i][0] < 0.0001 * element_num) or (ori_label != 1 and rec_label[ori_label] == 1):
             # 该连通区域不是该牙齿类别的最大连通区域, 设置为背景0
             segment_map[labels_out == ccl_label] = 0
         elif ori_label != 1:
