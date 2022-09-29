@@ -142,11 +142,6 @@ def display_segmentation_3D(class_map):
     # 画3D点图
     p3d = mlab.points3d(x, y, z, label, extent=extent, mode='sphere', scale_factor=1, resolution=4, scale_mode="none")
 
-    # 定位缺失牙齿并且画出缺失牙齿的位置
-    missing_tooth_position, missing_tooth_classes = search_and_display_missing_tooth(class_map, index_to_class_dict)
-    print(missing_tooth_position)
-    print(missing_tooth_classes)
-
     # 定义三个轴的注释
     mlab.xlabel("X Label")
     mlab.ylabel("Y Label")
@@ -156,6 +151,11 @@ def display_segmentation_3D(class_map):
     p3d.module_manager.scalar_lut_manager.lut.table = color_table
     # 设置点的色彩的模式
     p3d.glyph.color_mode = "color_by_scalar"
+
+    # 定位缺失牙齿并且画出缺失牙齿的位置
+    missing_tooth_position, missing_tooth_classes = search_and_display_missing_tooth(class_map, index_to_class_dict)
+    print(missing_tooth_position)
+    print(missing_tooth_classes)
 
     mlab.show()
 
@@ -175,10 +175,32 @@ def locate_missing_tooth(class_map, label1, label2):
     x2_min, x2_max, y2_min, y2_max, z2_min, z2_max = \
         x2_pos.min(), x2_pos.max(), y2_pos.min(), y2_pos.max(), z2_pos.min(), z2_pos.max()
 
+    # 分别计算左右两个参考立方体在x轴和y轴上的宽度
+    x1_width, y1_width, x2_width, y2_width = x1_max - x1_min, y1_max - y1_min, x2_max - x2_min, y2_max - y2_min
+    # 计算缺失牙齿立方体在x轴和y轴上的理论宽度
+    x_width, y_width = int((x1_width + x2_width) / 2), int((y1_width + y2_width) / 2)
+    # 计算缺失牙齿理论立方体在x轴上的宽度/在y轴上的宽度
+    th_ratio = x_width / (y_width + 1e-12)
+
+    # 分别计算缺失牙齿在x轴和y轴上坐标的上下界
+    x_lower_bound, x_upper_bound, y_lower_bound, y_upper_bound = \
+        min(x1_max, x2_max), max(x1_min, x2_min), min(y1_max, y2_max), max(y1_min, y2_min)
+    # 分别在x轴和y轴上计算两个参考立方体之间的间隔距离
+    x_gap, y_gap = max(0, x_upper_bound - x_lower_bound), max(0, y_upper_bound - y_lower_bound)
+    # 计算两个参考立方体在x轴上的间隔距离/在y轴上的间隔距离
+    prac_ratio = x_gap / (y_gap + 1e-12)
+
+    # 根据实际间隔距离和缺失牙齿立方体宽度的大小关系，分情况讨论
+    if x_gap < x_width and y_gap < y_width:
+
+
+
+
+
     # 计算出缺失牙齿目标框6个面分别在垂直轴上的坐标
     x_min, x_max, y_min, y_max, z_min, z_max = \
-        min(x1_max, x2_max) + config.missing_tooth_box_margin, max(x1_min, x2_min) - config.missing_tooth_box_margin, \
-        int((y1_min + y2_min) / 2), int((y1_max + y2_max) / 2), \
+        max(x_lower_bound, int((x1_min + x2_min) / 2)), min(x_upper_bound, int((x1_max + x2_max) / 2)), \
+        max(y_lower_bound, int((y1_min + y2_min) / 2)), min(y_upper_bound, int((y1_max + y2_max) / 2)), \
         int((z1_min + z2_min) / 2), int((z1_max + z2_max) / 2)
 
     # 根据这6个面的坐标构造立方体的8个顶点
