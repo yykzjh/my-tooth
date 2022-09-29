@@ -192,16 +192,38 @@ def locate_missing_tooth(class_map, label1, label2):
 
     # 根据实际间隔距离和缺失牙齿立方体宽度的大小关系，分情况讨论
     if x_gap < x_width and y_gap < y_width:
+        # 比较实际间隔长宽比和理论确实牙齿立方体长宽比的大小
+        if prac_ratio >= th_ratio:  # 如果x轴间隔比较大，则以x轴间隔作为缺失牙齿立方体在x轴上的宽度
+            # 缺失牙齿立方体在x轴上的边界为x轴间隔的左右边界
+            x_min, x_max = x_lower_bound + config.missing_tooth_box_margin, x_upper_bound - config.missing_tooth_box_margin
+            # 计算缺失牙齿立方体在y轴上的宽度,调整y轴宽度，使得长宽比等于理论立方体的长宽比
+            prac_y_width = int(x_gap / th_ratio)
+            # 计算缺失牙齿立方体在y轴上的中心点
+            y_central_point = int((y1_min + y1_max + y2_min + y2_max) / 4)
+            # 根据缺失牙齿立方体在y轴上的中心点和宽度，计算缺失牙齿立方体在y轴上的边界
+            y_min, y_max = int(y_central_point - prac_y_width / 2), int(y_central_point + prac_y_width / 2)
+        else:
+            # 缺失牙齿立方体在y轴上的边界为y轴间隔的左右边界
+            y_min, y_max = y_lower_bound + config.missing_tooth_box_margin, y_upper_bound - config.missing_tooth_box_margin
+            # 计算缺失牙齿立方体在x轴上的宽度,调整x轴宽度，使得长宽比等于理论立方体的长宽比
+            prac_x_width = int(y_gap * th_ratio)
+            # 计算缺失牙齿立方体在x轴上的中心点
+            x_central_point = int((x1_min + x1_max + x2_min + x2_max) / 4)
+            # 根据缺失牙齿立方体在x轴上的中心点和宽度，计算缺失牙齿立方体在x轴上的边界
+            x_min, x_max = int(x_central_point - prac_x_width / 2), int(x_central_point + prac_x_width / 2)
+    else:  # x轴和y轴中至少有一个轴上的间隔距离大于缺失牙齿理论立方体的宽度
+        # 首先x轴和y轴的边界都初始化为间隔的边界
+        x_min, x_max, y_min, y_max = x_lower_bound + config.missing_tooth_box_margin, x_upper_bound - config.missing_tooth_box_margin, \
+                                     y_lower_bound + config.missing_tooth_box_margin, y_upper_bound - config.missing_tooth_box_margin
+        # 如果x轴的间隔小于缺失牙齿理论立方体在x轴上的宽度，则缺失牙齿立方体在x轴上的边界等于缺失牙齿理论立方体在x轴上的边界
+        if x_gap < x_width:
+            x_min, x_max = int((x1_min + x2_min) / 2), int((x1_max + x2_max) / 2)
+        # 如果y轴的间隔小于缺失牙齿理论立方体在y轴上的宽度，则缺失牙齿立方体在y轴上的边界等于缺失牙齿理论立方体在y轴上的边界
+        if y_gap < y_width:
+            y_min, y_max = int((y1_min + y2_min) / 2), int((y1_max + y2_max) / 2)
 
-
-
-
-
-    # 计算出缺失牙齿目标框6个面分别在垂直轴上的坐标
-    x_min, x_max, y_min, y_max, z_min, z_max = \
-        max(x_lower_bound, int((x1_min + x2_min) / 2)), min(x_upper_bound, int((x1_max + x2_max) / 2)), \
-        max(y_lower_bound, int((y1_min + y2_min) / 2)), min(y_upper_bound, int((y1_max + y2_max) / 2)), \
-        int((z1_min + z2_min) / 2), int((z1_max + z2_max) / 2)
+    # 计算出缺失牙齿立方体在z轴上的边界
+    z_min, z_max = int((z1_min + z2_min) / 2), int((z1_max + z2_max) / 2)
 
     # 根据这6个面的坐标构造立方体的8个顶点
     #                                   pt1_ _ _ _ _ _ _ _ _pt2
