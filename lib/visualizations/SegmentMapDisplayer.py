@@ -8,6 +8,7 @@
 """
 import os
 import numpy as np
+import math
 from collections import Counter
 
 from lib import utils
@@ -152,10 +153,13 @@ def display_segmentation_3D(class_map):
     # 设置点的色彩的模式
     p3d.glyph.color_mode = "color_by_scalar"
 
-    # # 定位缺失牙齿并且画出缺失牙齿的位置
-    # missing_tooth_position, missing_tooth_classes = search_and_display_missing_tooth(class_map, index_to_class_dict)
-    # print(missing_tooth_position)
-    # print(missing_tooth_classes)
+    # 定位缺失牙齿并且画出缺失牙齿的位置
+    missing_tooth_position, missing_tooth_classes = search_and_display_missing_tooth(class_map, index_to_class_dict)
+    print(missing_tooth_position)
+    print(missing_tooth_classes)
+
+    # 衡量缺失牙齿在xy平面上的定位效果
+    metric_implant_location(missing_tooth_position, missing_tooth_classes, class_map)
 
     mlab.show()
 
@@ -346,6 +350,42 @@ def search_and_display_missing_tooth(class_map, index_to_class_dict):
     return missing_tooth_position, missing_tooth_classes
 
 
+
+# 根据缺失牙齿位置和种植体判断定位效果
+def metric_implant_location(missing_tooth_position, missing_tooth_classes, class_map):
+    # 找到所有种植体体素的位置
+    x_pos, y_pos, z_pos = np.where(class_map == 2)
+    # 确定种植体在xy平面的最小外接矩形
+    x_min, x_max, y_min, y_max = x_pos.min(), x_pos.max(), y_pos.min(), y_pos.max()
+    # 确定种植牙齿在xy平面最小外接矩形的中心点
+    implant_x_center, implant_y_center = (x_min + x_max) / 2, (y_min + y_max) / 2
+
+    # 初始化数据结构
+    min_dist = float("inf")  # 中心点最小距离
+    min_idx = -1  # 中心点距离最小的缺失牙齿框索引
+    min_center_x = -1
+    min_center_y = -1
+    # 遍历所有缺失牙齿框
+    for i in range(len(missing_tooth_position)):
+        vertex_list = missing_tooth_position[i]
+        # 分别获取3个顶点三个轴上的坐标信息
+        x1, y1, z1 = vertex_list[0]  # | => pt1
+        x2, y2, z2 = vertex_list[1]  # | => pt2
+        x3, y3, z3 = vertex_list[2]  # | => pt3
+        # 计算得到当前缺失牙齿目标框在xy平面的中心点
+        center_x, center_y = (x1 + x2) / 2, (y1 + y3) / 2
+        # 计算与种植体矩形中心点的距离
+        dist = math.dist((implant_x_center, implant_y_center), (center_x, center_y))
+        # 判断当前距离是否小于之前的距离
+        if dist < min_dist:
+            min_dist = dist
+            min_idx = i
+            min_center_x = center_x
+            min_center_y = center_y
+    print("种植体在xy平面的中心点为：", str((implant_x_center, implant_y_center)))
+    print("缺失定位算法对于种植体定位的目标框在xy平面的中心点为：", str((min_center_x, min_center_y)))
+    print("种植体处缺失牙齿定位框中心点和种植体中心点的距离为：", min_dist)
+    print("种植体处缺失牙齿的类别为：", missing_tooth_classes[min_idx])
 
 
 
