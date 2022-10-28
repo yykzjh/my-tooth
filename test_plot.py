@@ -200,6 +200,11 @@ def test_CCL():
 
 
 
+def test():
+    a = 1
+    return 1 if a != 0 else 0, 100
+
+
 
 if __name__ == '__main__':
 
@@ -245,8 +250,10 @@ if __name__ == '__main__':
     #     [170, 255, 0, 255], # 34 br8
     # ]
 
-    test_CCL()
+    # test_CCL()
 
+
+    print(test())
 
 
 

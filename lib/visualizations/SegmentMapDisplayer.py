@@ -152,10 +152,10 @@ def display_segmentation_3D(class_map):
     # 设置点的色彩的模式
     p3d.glyph.color_mode = "color_by_scalar"
 
-    # 定位缺失牙齿并且画出缺失牙齿的位置
-    missing_tooth_position, missing_tooth_classes = search_and_display_missing_tooth(class_map, index_to_class_dict)
-    print(missing_tooth_position)
-    print(missing_tooth_classes)
+    # # 定位缺失牙齿并且画出缺失牙齿的位置
+    # missing_tooth_position, missing_tooth_classes = search_and_display_missing_tooth(class_map, index_to_class_dict)
+    # print(missing_tooth_position)
+    # print(missing_tooth_classes)
 
     mlab.show()
 
