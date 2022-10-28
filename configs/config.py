@@ -139,9 +139,9 @@ terminal_show_freq = 50  # 终端打印统计信息的频率,以step为单位
 """
 test_type = 1  # 测试类型,0为无标签的单张图像,1为有标签的单张图像，2为图像数据集
 
-single_image_path = r"./datasets/src_10/train/images/1_1.nrrd"  # 单张图像的存储路径
+single_image_path = r"./datasets/src_10/train/images/15_2.nrrd"  # 单张图像的存储路径
 
-single_label_path = "./datasets/src_10/train/labels/1_1.nrrd"  # 单张图像对应的标签存储路径
+single_label_path = "./datasets/src_10/train/labels/15_2.nrrd"  # 单张图像对应的标签存储路径
 
 test_dataset_path = r"./datasets/src_10/val"  # 测试数据集的路径
 
