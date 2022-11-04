@@ -3,6 +3,7 @@ import scipy
 import nrrd
 import glob
 import nibabel as nib
+import seaborn as sns
 
 
 
@@ -36,6 +37,8 @@ def show_space_property(dataset_path=r"../../datasets/src_10"):
 
 
 
+def analyse_dataset(dataset_path=r"../../datasets/src_10"):
+    pass
 
 
 
@@ -47,7 +50,9 @@ def show_space_property(dataset_path=r"../../datasets/src_10"):
 
 
 if __name__ == '__main__':
-    show_space_property(r"../../datasets/src_10")
+    # show_space_property(r"../../datasets/src_10")
+
+
 
 
 
